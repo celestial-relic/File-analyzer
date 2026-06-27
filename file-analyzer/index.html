@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAVEN | File Analyzer &amp; Malware Scanner</title>
+    <meta name="description" content="Advanced client-side file type detection, binary analysis, and malware indicator scanning.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;500;700&family=Orbitron:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="scanline"></div>
+    <div class="noise"></div>
+
+    <header id="appHeader">
+        <div class="header-inner">
+            <div class="logo-group">
+                <div class="logo-icon-wrap">
+                    <svg class="logo-svg" viewBox="0 0 48 48" width="42" height="42">
+                        <polygon points="24,2 46,14 46,34 24,46 2,34 2,14" fill="none" stroke="var(--accent)" stroke-width="2"/>
+                        <polygon points="24,8 40,17 40,31 24,40 8,31 8,17" fill="none" stroke="var(--accent)" stroke-width="1" opacity="0.5"/>
+                        <text x="24" y="29" text-anchor="middle" fill="var(--accent)" font-size="18" font-family="Orbitron" font-weight="700">R</text>
+                    </svg>
+                </div>
+                <div class="logo-text">
+                    <h1>RAVEN</h1>
+                    <span class="tagline">File Decoder &amp; Threat Analyzer</span>
+                </div>
+            </div>
+            <div class="header-stats" id="headerStats">
+                <div class="stat-chip"><span class="stat-label">Signatures</span><span class="stat-value">120+</span></div>
+                <div class="stat-chip"><span class="stat-label">Indicators</span><span class="stat-value">85+</span></div>
+                <div class="stat-chip"><span class="stat-label">Engine</span><span class="stat-value">v2.0</span></div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section id="dropZone" class="drop-zone">
+            <div class="drop-zone-inner">
+                <div class="drop-hex-ring">
+                    <svg viewBox="0 0 120 120" width="120" height="120">
+                        <polygon points="60,5 110,30 110,90 60,115 10,90 10,30" fill="none" stroke="var(--accent)" stroke-width="1.5" class="hex-outer"/>
+                        <polygon points="60,20 95,37 95,83 60,100 25,83 25,37" fill="none" stroke="var(--accent)" stroke-width="1" opacity="0.4" class="hex-inner"/>
+                    </svg>
+                    <div class="drop-icon-center">
+                        <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="var(--accent)" stroke-width="1.5">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="17 8 12 3 7 8"/>
+                            <line x1="12" y1="3" x2="12" y2="15"/>
+                        </svg>
+                    </div>
+                </div>
+                <h2>Drop File to Analyze</h2>
+                <p class="drop-sub">or <span class="browse-link" id="browseLink">browse files</span></p>
+                <input type="file" id="fileInput" hidden>
+                <div class="supported-line">PE · ELF · PDF · ZIP · RAR · Office · Images · Scripts · 50+ formats</div>
+            </div>
+        </section>
+
+        <section id="loadingSection" class="loading-section hidden">
+            <div class="loading-content">
+                <div class="scan-ring">
+                    <svg viewBox="0 0 100 100" width="100" height="100">
+                        <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(0,255,136,0.1)" stroke-width="2"/>
+                        <circle cx="50" cy="50" r="45" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="70 213" class="scan-spinner"/>
+                    </svg>
+                </div>
+                <p class="loading-text">Scanning binary structure<span class="dots"></span></p>
+                <div class="loading-bar"><div class="loading-fill" id="loadingFill"></div></div>
+            </div>
+        </section>
+
+        <section id="results" class="results hidden">
+            <!-- Threat Assessment -->
+            <div class="result-card threat-overview" id="threatOverviewCard">
+                <div class="card-body">
+                    <div class="threat-layout">
+                        <div class="threat-gauge-wrap">
+                            <canvas id="threatGauge" width="220" height="130"></canvas>
+                            <div class="threat-score-num" id="threatScoreNum">0</div>
+                        </div>
+                        <div class="threat-details">
+                            <div class="threat-verdict-badge" id="threatBadge">
+                                <span class="verdict-dot"></span>
+                                <span class="verdict-text" id="verdictText">CLEAN</span>
+                            </div>
+                            <div class="threat-summary" id="threatSummary">No file analyzed yet.</div>
+                            <div class="threat-breakdown" id="threatBreakdown"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- File Info -->
+            <div class="result-card" id="fileInfoCard">
+                <div class="card-header" data-target="fileInfoCard">
+                    <div class="card-title"><span class="card-icon">◈</span>File Information</div>
+                    <span class="chevron">▾</span>
+                </div>
+                <div class="card-body">
+                    <div class="info-grid" id="fileInfoGrid"></div>
+                </div>
+            </div>
+
+            <!-- File Type -->
+            <div class="result-card" id="fileTypeCard">
+                <div class="card-header" data-target="fileTypeCard">
+                    <div class="card-title"><span class="card-icon">⬡</span>File Type Detection</div>
+                    <span class="chevron">▾</span>
+                </div>
+                <div class="card-body">
+                    <div id="fileTypeContent"></div>
+                </div>
+            </div>
+
+            <!-- Entropy Analysis -->
+            <div class="result-card" id="entropyCard">
+                <div class="card-header" data-target="entropyCard">
+                    <div class="card-title"><span class="card-icon">◧</span>Entropy Analysis</div>
+                    <span class="chevron">▾</span>
+                </div>
+                <div class="card-body">
+                    <div id="entropyStats"></div>
+                    <canvas id="entropyCanvas" width="800" height="180"></canvas>
+                </div>
+            </div>
+
+            <!-- Malware Indicators -->
+            <div class="result-card" id="malwareCard">
+                <div class="card-header" data-target="malwareCard">
+                    <div class="card-title"><span class="card-icon">⚑</span>Malware Indicators</div>
+                    <span class="chevron">▾</span>
+                </div>
+                <div class="card-body">
+                    <div id="malwareContent"></div>
+                </div>
+            </div>
+
+            <!-- PE Analysis -->
+            <div class="result-card hidden" id="peCard">
+                <div class="card-header" data-target="peCard">
+                    <div class="card-title"><span class="card-icon">⚙</span>PE Header Analysis</div>
+                    <span class="chevron">▾</span>
+                </div>
+                <div class="card-body">
+                    <div id="peContent"></div>
+                </div>
+            </div>
+
+            <!-- Strings -->
+            <div class="result-card" id="stringsCard">
+                <div class="card-header" data-target="stringsCard">
+                    <div class="card-title"><span class="card-icon">❯</span>Extracted Strings</div>
+                    <span class="chevron">▾</span>
+                </div>
+                <div class="card-body">
+                    <div class="strings-toolbar">
+                        <input type="text" id="stringFilter" placeholder="Filter strings..." class="filter-input">
+                        <select id="stringMinLen" class="filter-select">
+                            <option value="4">≥ 4 chars</option>
+                            <option value="6">≥ 6 chars</option>
+                            <option value="8" selected>≥ 8 chars</option>
+                            <option value="12">≥ 12 chars</option>
+                            <option value="20">≥ 20 chars</option>
+                        </select>
+                        <span class="string-count" id="stringCount">0 strings</span>
+                    </div>
+                    <div id="stringsContent" class="strings-box"></div>
+                </div>
+            </div>
+
+            <!-- Hex Dump -->
+            <div class="result-card" id="hexCard">
+                <div class="card-header" data-target="hexCard">
+                    <div class="card-title"><span class="card-icon">▦</span>Hex Dump</div>
+                    <span class="chevron">▾</span>
+                </div>
+                <div class="card-body">
+                    <div class="hex-toolbar">
+                        <button class="hex-btn" id="hexPrevBtn">◀ Prev</button>
+                        <span class="hex-page-info" id="hexPageInfo">Page 1 / 1</span>
+                        <button class="hex-btn" id="hexNextBtn">Next ▶</button>
+                        <input type="text" id="hexJump" placeholder="Jump to offset (hex)..." class="filter-input hex-jump-input">
+                    </div>
+                    <pre class="hex-dump" id="hexDumpPre"></pre>
+                </div>
+            </div>
+
+            <!-- New Analysis Button -->
+            <div class="new-analysis-wrap">
+                <button class="new-analysis-btn" id="newAnalysisBtn">Analyze Another File</button>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-inner">
+            <div class="footer-divider"></div>
+            <p class="created-by">Created by <span class="author">Max</span></p>
+            <p class="footer-sub">RAVEN — Advanced File Analysis &amp; Threat Detection Engine</p>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
