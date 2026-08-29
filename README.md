@@ -66,3 +66,59 @@ The application follows a simple pipeline:
              ┌─────────────┐
              │ Final Result│
              └─────────────┘
+
+
+## 🌐 Run Locally
+
+### Prerequisites
+
+- Node.js
+- npm
+- Git
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/celestial-relic/riskyfileanalyzer.git
+cd riskyfileanalyzer
+````
+
+### 2. Install dependencies
+
+```bash
+npm install
+```
+
+### 3. Start the development server
+
+```bash
+npm run dev
+```
+
+### 4. Open the application
+
+Open the localhost URL shown in your terminal.
+
+Usually:
+
+```text
+http://localhost:5173
+```
+
+or:
+
+```text
+http://localhost:3000
+```
+
+### 5. Stop the server
+
+Press:
+
+```text
+Ctrl + C
+```
+
+in the terminal.
+
+```
