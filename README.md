@@ -120,5 +120,3 @@ Ctrl + C
 ```
 
 in the terminal.
-
-```
