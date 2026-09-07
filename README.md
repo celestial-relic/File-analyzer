@@ -120,3 +120,5 @@ Ctrl + C
 ```
 
 in the terminal.
+
+Live link : https://riskyfileanalyzer.netlify.app/
