@@ -122,3 +122,4 @@ Ctrl + C
 in the terminal.
 
 Live link : https://riskyfileanalyzer.netlify.app/
+Try it out here from above link
